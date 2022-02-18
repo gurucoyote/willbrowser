@@ -1,9 +1,9 @@
-const { chromium } = require("playwright-chromium");
+import { chromium } from "playwright-chromium";
 
-const Vorpal = require("vorpal");
-const repl = require("vorpal-repl");
-const grep = require("vorpal-grep");
-
+import Vorpal from "vorpal";
+import grep from "vorpal-grep";
+// https://github.com/sindresorhus/ansi-escapes
+import ansiEscapes from "ansi-escapes";
 const vorpal = Vorpal();
 let browser, page;
 async function setup() {
@@ -43,7 +43,10 @@ vorpal
     }
     callback();
   });
-
+vorpal.command("clear", "clear the screen").action(function (args, callback) {
+  process.stdout.write(ansiEscapes.eraseScreen);
+  callback();
+});
 vorpal.command("goto <url>", "goto an url").action(function (args, callback) {
   this.log("going to " + args.url);
   goto(args.url).then(callback);

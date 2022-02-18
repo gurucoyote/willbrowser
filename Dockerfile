@@ -37,4 +37,4 @@ RUN npm i
 COPY --chown=node  ./ ./
 
 ENTRYPOINT ["tini", "--"]
-CMD [ "node", "index.js" ]
+CMD [ "node", "index.mjs" ]
