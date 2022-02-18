@@ -26,7 +26,8 @@ async function goto(url) {
   await setup(); // ;
   const res = await page.goto(url);
   const body = await res.body();
-  console.log("body", body.toString());
+  // console.log("body", body.toString());
+  return body.toString();
 }
 
 vorpal.use(grep);
@@ -49,12 +50,17 @@ vorpal.command("clear", "clear the screen").action(function (args, callback) {
 });
 vorpal.command("goto <url>", "goto an url").action(function (args, callback) {
   this.log("going to " + args.url);
-  goto(args.url).then(callback);
+  goto(args.url).then((r) => {
+    this.log(r);
+    callback();
+  });
 });
 vorpal
-  .command("run", "runs the default playwright action")
-  .action(function (args, callback) {
-    this.log("running now...");
-    run().then(callback);
+  .command("get <el>", "gets and element and prints its innertext")
+  .action(function (args, cb) {
+    page.innerText(args.el).then((r) => {
+      this.log(r);
+      cb();
+    });
   });
 vorpal.delimiter("will>").show();
