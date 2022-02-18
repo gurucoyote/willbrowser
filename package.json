@@ -1,0 +1,13 @@
+{
+  "name": "will",
+  "version": "1.0.0",
+  "description": "Interactive headless browser",
+  "main": "index.js",
+  "author": "Guru Coyote ",
+  "license": "MIT",
+  "dependencies": {
+    "playwright-chromium": "^1.19.1",
+    "vorpal": "^1.12.0",
+    "vorpal-grep": "^0.2.0"
+  }
+}
