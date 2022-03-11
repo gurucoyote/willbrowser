@@ -14,7 +14,7 @@ if (url) {
 }
 
 vorpal
-  .mode("repl")
+  .mode("repl") //
   .description("Enters the user into a REPL session.")
   .delimiter("repl:")
   .action(function (command, callback) {
@@ -32,21 +32,32 @@ vorpal
     callback();
   });
 vorpal
-  .command("goto <url>", "goto an url") //
+  .command("goto <url>", "goto url") //
   .action(function (args, callback) {
     this.log("going to " + args.url);
-    goto(args.url).then(async () => {
+    goto(args.url).then(() => {
       callback();
     });
   });
 vorpal
-  .command("next [n]", "next [n] elemen(s)t in accessebilty tree")
+  .command("click", "click the current element")
+  .action(async function (_, callback) {
+    this.log("clicking", accFormatElement(acts.children[currIndex]));
+    try {
+      await currEl.click();
+    } catch (e) {
+      this.log("click error", e.message);
+    }
+    callback();
+  });
+vorpal
+  .command("next [n]", "next [n] elemen(s)t in accessibilty tree")
   .action(function (args, callback) {
     reportElements(null, args.n || 1);
     callback();
   });
 vorpal
-  .command("prev [n]", "previous [n] element(s) in accessebilty tree")
+  .command("prev [n]", "previous [n] element(s) in accessibilty tree")
   .action(function (args, callback) {
     reportElements(currIndex - (args.n || 1), args.n || 1);
     callback();
@@ -68,7 +79,7 @@ async function reportElements(start, number) {
     if (i >= start && i < start + number) {
       console.log(accFormatElement(el));
       currIndex = i;
-      currEl = el;
+      currEl = page.locator(`text="${el.name}"`);
     }
   });
 }
@@ -100,7 +111,6 @@ async function setup() {
     console.log(acts.name, " at ", p.url());
     console.log("page with ", acts.children.length, " elements");
     currIndex = 0;
-    currEl = acts[currIndex];
     reportElements(currIndex, 2);
   });
 }
