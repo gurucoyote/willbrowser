@@ -36,5 +36,4 @@ COPY --chown=node package*.json ./
 RUN npm i
 COPY --chown=node  ./ ./
 
-ENTRYPOINT ["tini", "--"]
-CMD [ "node", "index.mjs" ]
+ENTRYPOINT ["tini", "--", "node", "index.mjs" ]

@@ -2,3 +2,12 @@ node_modules
 codeceptjs
 node_modules
 playwright-docker-alpine
+broken
+broken/
+cli-editors/
+codeceptjs/
+node_modules/
+playwright-docker-alpine/
+vorpal-hacker-news/
+vorpal-openapi/
+vorpal-repl/

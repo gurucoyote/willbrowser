@@ -2,4 +2,4 @@
 
 docker build -t will . \
 && \
-docker run -ti --rm --name will will
+docker run -ti --rm --name will will $1
