@@ -1,0 +1,5 @@
+{
+  "type": "commonjs",
+  "main": "../dist/puppeteer.cjs",
+  "types": "../dist/puppeteer.d.ts"
+}

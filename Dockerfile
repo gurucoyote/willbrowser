@@ -33,7 +33,8 @@ WORKDIR /app
 USER node
 
 COPY --chown=node package*.json ./
-RUN npm i
+#RUN npm i
+RUN yarn
 COPY --chown=node  ./ ./
 
 ENTRYPOINT ["tini", "--", "node", "index.mjs" ]

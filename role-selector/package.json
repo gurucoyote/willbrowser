@@ -1,0 +1,107 @@
+{
+  "name": "role-selector",
+  "version": "0.5.0",
+  "description": "Accessible role selector for browsers, jsdom, Playwright, Puppeteer, Cypress, and more",
+  "type": "module",
+  "module": "dist/index.js",
+  "main": "dist/index.cjs",
+  "browser": "dist/browser.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "require": "./dist/index.cjs",
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./eval": "./dist/role-selector.eval.js",
+    "./playwright": {
+      "require": "./dist/playwright.cjs",
+      "import": "./dist/playwright.js",
+      "types": "./dist/playwright.d.ts"
+    },
+    "./playwright-test": {
+      "require": "./dist/playwright.cjs",
+      "import": "./dist/playwright.js",
+      "types": "./dist/playwright-test.d.ts"
+    },
+    "./puppeteer": {
+      "require": "./dist/puppeteer.cjs",
+      "import": "./dist/puppeteer.js",
+      "types": "./dist/puppeteer.d.ts"
+    },
+    "./browser": "./dist/browser.js"
+  },
+  "repository": "https://github.com/kevin940726/role-selector.git",
+  "author": "Kai Hao",
+  "license": "MIT",
+  "keywords": [
+    "testing-library",
+    "aria",
+    "accessibility",
+    "selector",
+    "query",
+    "jsdom",
+    "playwright",
+    "puppeteer",
+    "cypress",
+    "jest"
+  ],
+  "scripts": {
+    "build": "tsc && npm run build-playwright-test-definition && rollup -c",
+    "build-playwright-test-definition": "sed \"s#'playwright'#'@playwright/test'#\" dist/playwright.d.ts > dist/playwright-test.d.ts",
+    "pretest": "npx playwright install-deps",
+    "test": "npm-run-all -c test:**",
+    "test:unit": "jest -c jest.config.mjs",
+    "test:specs": "playwright test -c test/playwright.config.ts",
+    "test:jest-jsdom": "jest -c test/integration/jest-jsdom/jest.jsdom.config.js",
+    "test:jest-playwright": "jest -c test/integration/jest-playwright/jest.playwright.config.js",
+    "test:jest-puppeteer": "jest -c test/integration/jest-puppeteer/jest.puppeteer.config.js",
+    "test:playwright": "ts-node test/integration/playwright/test.ts",
+    "test:puppeteer": "ts-node test/integration/puppeteer/test.ts",
+    "prepare": "npm run build && npm run test"
+  },
+  "peerDependencies": {
+    "@playwright/test": "*",
+    "playwright": "*",
+    "puppeteer": "*"
+  },
+  "peerDependenciesMeta": {
+    "@playwright/test": {
+      "optional": true
+    },
+    "playwright": {
+      "optional": true
+    },
+    "puppeteer": {
+      "optional": true
+    }
+  },
+  "dependencies": {
+    "@testing-library/dom": "^8.11.3"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.18.0",
+    "@rollup/plugin-commonjs": "^20.0.0",
+    "@rollup/plugin-node-resolve": "^13.0.4",
+    "@rollup/plugin-replace": "^3.0.1",
+    "@types/jest": "^26.0.24",
+    "@types/jest-environment-puppeteer": "^4.4.1",
+    "expect-playwright": "^0.8.0",
+    "jest": "^26.6.3",
+    "jest-playwright-preset": "^1.7.0",
+    "jest-puppeteer": "^5.0.4",
+    "npm-run-all": "^4.1.5",
+    "playwright": "^1.18.0",
+    "playwright-core": "^1.18.0",
+    "prettier": "2.2.1",
+    "puppeteer": "^10.2.0",
+    "rollup": "^2.56.3",
+    "rollup-plugin-terser": "^7.0.2",
+    "ts-jest": "^26.4.4",
+    "ts-node": "^10.2.1",
+    "typescript": "^4.4.2"
+  },
+  "prettier": {
+    "singleQuote": true
+  }
+}

@@ -1,13 +1,13 @@
-import { chromium } from "playwright-chromium";
+import { selectors, chromium } from "playwright-chromium";
+import { selectorScript } from "./role-selector/dist/playwright.js";
+
 import Vorpal from "vorpal";
-import grep from "vorpal-grep";
 // https://github.com/sindresorhus/ansi-escapes
 import ansiEscapes from "ansi-escapes";
-
+// setup the role-selector
+selectors.register("role", selectorScript, { contentScript: true });
 const vorpal = Vorpal();
-vorpal.use(grep);
 let browser, page, acts, currIndex, currEl;
-// console.log(process.argv);
 let url = process.argv[2];
 if (url) {
   await goto(url);
@@ -40,11 +40,28 @@ vorpal
     });
   });
 vorpal
-  .command("click", "click the current element")
-  .action(async function (_, callback) {
-    this.log("clicking", accFormatElement(acts.children[currIndex]));
+  .command(
+    "click [nth]",
+    "click the [nth] element, or the current if no number is selected"
+  )
+  .action(async function (args, callback) {
+    if (args.nth) currIndex = args.nth;
+    const el = acts.children[currIndex];
+    this.log("clicking", accFormatElement(el));
     try {
-      await currEl.click();
+      await getLocator(el).click({ timeout: 2000 });
+    } catch (e) {
+      this.log("click error", e.message);
+    }
+    callback();
+  });
+vorpal
+  .command("type [text]", "type into current element if possible.")
+  .action(async function (args, callback) {
+    const el = acts.children[currIndex];
+    this.log("typing into", accFormatElement(el));
+    try {
+      await getLocator(el).type(args.text, { timeout: 2000 });
     } catch (e) {
       this.log("click error", e.message);
     }
@@ -77,11 +94,15 @@ async function reportElements(start, number) {
   if (!start) start = currIndex + 1;
   acts.children.map((el, i) => {
     if (i >= start && i < start + number) {
-      console.log(accFormatElement(el));
+      console.log(i, accFormatElement(el));
       currIndex = i;
-      currEl = page.locator(`text="${el.name}"`);
+      currEl = getLocator(el);
     }
   });
+}
+function getLocator(el) {
+  // const userNameInput = page.locator('role=textbox[name="User Name"]');
+  return page.locator(`role=${el.role}[name="${el.name}"]`);
 }
 function accFormatElement(el) {
   let out = "";
@@ -109,9 +130,11 @@ async function setup() {
   page.on("load", async function (p) {
     acts = await page.accessibility.snapshot();
     console.log(acts.name, " at ", p.url());
-    console.log("page with ", acts.children.length, " elements");
     currIndex = 0;
-    reportElements(currIndex, 2);
+    if (acts.children) {
+      console.log("page with ", acts.children.length, " elements");
+      reportElements(currIndex, 2);
+    }
   });
 }
 async function goto(url) {
