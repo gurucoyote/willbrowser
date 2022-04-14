@@ -50,6 +50,8 @@ vorpal
     this.log("clicking", accFormatElement(el));
     try {
       await getLocator(el).click({ timeout: 2000 });
+      acts = await page.accessibility.snapshot();
+      reportElements(currIndex, 2);
     } catch (e) {
       this.log("click error", e.message);
     }
@@ -65,6 +67,16 @@ vorpal
     } catch (e) {
       this.log("click error", e.message);
     }
+    callback();
+  });
+vorpal
+  .command(
+    "jump [nth] [n]",
+    "jump to [nth] elemen(s)t in accessibilty tree, and show [n] lines"
+  )
+  .action(function (args, callback) {
+    currIndex = args.nth;
+    reportElements(args.nth, args.n || 1);
     callback();
   });
 vorpal
@@ -120,6 +132,9 @@ function accFormatElement(el) {
   out += ` : ${el.name}`;
   return out;
 }
+function localUrl(u) {
+  return u.replace(url, "").substring(0, 120);
+}
 async function setup() {
   browser = await chromium.launch({
     executablePath: process.env.CHROME_BIN,
@@ -127,6 +142,22 @@ async function setup() {
 
   page = await browser.newPage();
   page.setViewportSize({ width: 600, height: 400 });
+  page.on("requestfailed", (request) => {
+    console.log("failed: " + localUrl(request.url()));
+  });
+  page.on("requestfinished", (request) => {
+    console.log("OK: " + localUrl(request.url()));
+    // console.log(request);
+  });
+
+  page.on("console", (msg) => {
+    console.log(
+      msg.type(),
+      // msg.location(),
+      msg.text()
+    );
+  });
+
   page.on("load", async function (p) {
     acts = await page.accessibility.snapshot();
     console.log(acts.name, " at ", p.url());
